@@ -56,7 +56,7 @@ Python及其库/模块的安装方式间[chugit/Crawler_Journal_Abbreviation](ht
 
 ## 白底黑根
 
-```{python}
+```python
 import cv2
 import numpy as np
 from skimage import morphology
@@ -180,7 +180,7 @@ os.startfile(output_dir)
 
 ## 黑底白根
 
-```{python}
+```python
 import cv2
 import numpy as np
 from skimage import morphology
@@ -285,7 +285,7 @@ os.startfile(output_dir)
 
 整合上述两部分代码，生成可交互界面。
 
-```{python}
+```python
 import tkinter as tk
 from tkinter import filedialog, ttk
 import cv2
