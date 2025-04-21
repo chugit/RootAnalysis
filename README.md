@@ -54,7 +54,7 @@ $$
 
 # 利用Python实现根系图像分析的批量处理
 
-Python及其库/模块的安装方式间[chugit/Crawler_Journal_Abbreviation](https://github.com/chugit/Crawler_Journal_Abbreviation)的[安装Python](https://github.com/chugit/Crawler_Journal_Abbreviation?tab=readme-ov-file#%E5%AE%89%E8%A3%85python/)和[安装Selenium](https://github.com/chugit/Crawler_Journal_Abbreviation?tab=readme-ov-file#%E5%AE%89%E8%A3%85selenium/)部分，其中，将“Selenium”替换为下方代码运行所缺失的库/模块，即为Python库/模块的安装方式。
+Python及其库/模块的安装方式见[chugit/Crawler_Journal_Abbreviation](https://github.com/chugit/Crawler_Journal_Abbreviation)的[安装Python](https://github.com/chugit/Crawler_Journal_Abbreviation?tab=readme-ov-file#%E5%AE%89%E8%A3%85python/)和[安装Selenium](https://github.com/chugit/Crawler_Journal_Abbreviation?tab=readme-ov-file#%E5%AE%89%E8%A3%85selenium/)部分，其中，将“Selenium”替换为下方代码运行所缺失的库/模块，即为Python库/模块的安装方式。
 
 ## 白底黑根
 
