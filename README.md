@@ -1,8 +1,12 @@
-本文将介绍植物根系图像中形态参数（总根长、根系平均直径、总表面积、总体积）的批量提取方式，并提供实现批量处理的Python代码。最后，针对图像处理的关键参数，构建具备可交互界面的程序，并将其打包成可执行文件。
+本项目将介绍植物根系图像中形态参数（总根长、根系平均直径、总表面积、总体积）的批量提取方式，并提供实现批量处理的Python代码。最后，针对图像处理的关键参数，构建具备可交互界面的程序，并将其打包成可执行文件。
 
-本文最终生成的可执行文件为[root_analysis_tool.exe](https://pan.baidu.com/s/17aDCBnx2Yyz15LRrG1vaWA?pwd=kav2)
+本项目最终生成的可执行文件为[root_analysis_tool.exe](https://pan.baidu.com/s/17aDCBnx2Yyz15LRrG1vaWA?pwd=kav2)
 
-# 根系扫描
+This project introduces a method for batch extraction of morphological parameters (total root length, average root diameter, total surface area, total volume) from plant root images, and provides Python code for batch processing. Finally, an interactive interface program is built for key image processing parameters and packaged into an executable file.
+
+---
+
+# 根系扫描 Root System Scanning
 
 利用扫描仪、高拍仪、相机等，在固定仪器参数下获取根系图像。同时，在相同条件下获取已知长度的线段/形状的图像，用作校准。
 
@@ -10,53 +14,93 @@
 
 后续分析将在灰度图的基础上进行。
 
-# 根系分析原理
+Use scanners, high-speed cameras, or standard cameras to acquire root images under fixed instrument settings. At the same time, capture images of line segments or shapes of known length under the same conditions for calibration.
 
-本文使用的根系图像处理流程与WinRHIZO等主流根系分析软件一致，关键步骤包括二值化、骨架化、长度测量、投影面积计算以及通过数学模型计算根系的平均直径、总表面积和总体积。
+The root color in the image should have high contrast with the background. Common setups include black roots on a white background (background lighter than the roots) or white roots on a black background (background darker than the roots).
 
-## 图像二值化
+Subsequent analysis will be performed on grayscale images.
+
+---
+
+# 根系分析原理 Principles of Root Analysis
+
+本项目使用的根系图像处理流程与 [WinRHIZO](https://www.regentinstruments.com/assets/winrhizo_about.html) 等主流根系分析软件一致，关键步骤包括二值化、骨架化、长度测量、投影面积计算以及通过数学模型计算根系的平均直径、总表面积和总体积。经测试与检验，本项目分析所得结果与 WinRHIZO 一致。
+
+The root image processing workflow used in this project is consistent with mainstream root analysis software such as [WinRHIZO](https://www.regentinstruments.com/assets/winrhizo_about.html). Key steps include binarization, skeletonization, length measurement, projected area calculation, and mathematical modeling to compute average diameter, total surface area, and total volume. After testing and validation, the analysis results obtained from this project are consistent with those from WinRHIZO.
+
+## 图像二值化 Image Binarization
 
 将根系灰度图像通过阈值分割转换为黑白图像，以便区分根系和背景。可以选择固定阈值或Otsu自动阈值法，具体选择基于背景类型和图像光照条件。
 
 二值化后，图像中根系与背景清晰分离，为后续的形态分析提供基础。
 
-## 骨架化处理
+Convert the grayscale root image into a binary (black and white) image using thresholding to distinguish roots from background. Either a fixed threshold or Otsu's automatic thresholding method can be used, depending on the background type and image lighting conditions.
+
+After binarization, the roots and background are clearly separated, laying the foundation for subsequent morphological analysis.
+
+## 骨架化处理 Skeletonization
 
 通过形态学骨架化将根系区域转换为单像素宽度的线条结构。
 
 骨架化在保持根系主干和分支信息的同时去除了多余的粗度信息，得到的骨架线条能更准确地表征根系的生长路径，为长度测量提供便捷的图像形式。
 
-## 根系长度计算
+Use morphological skeletonization to convert the root region into a single-pixel-wide line structure.
+
+Skeletonization preserves the main root structure and branch information while removing redundant thickness details. The resulting skeleton lines more accurately represent the root growth path, providing a convenient image form for length measurement.
+
+## 根系长度计算 Root Length Calculation
 
 统计骨架化图像的像素总数，根据像素与实际距离的转换比例（如每厘米的像素数），计算根系总长度。
 
-像素与实际距离的转换比例（本文亦称之为校准系数），可以利用ImageJ、Photoshop等图像处理软件，通过测定已知长度的线段像素点数确定。
+像素与实际距离的转换比例（本项目亦称之为校准系数），可以利用ImageJ、Photoshop等图像处理软件，通过测定已知长度的线段像素点数确定。
 
-## 根系投影面积
+Count the total number of pixels in the skeletonized image. Using a conversion factor between pixels and actual distance (e.g., pixels per centimeter), compute the total root length.
+
+The conversion factor (referred to as the calibration coefficient in this project) can be determined using image processing software such as ImageJ or Photoshop by measuring the pixel count of a line segment of known length.
+
+## 根系投影面积 Root Projected Area
 
 统计二值化图像中所有根系像素点总数，根据校准系数，计算根系投影面积。
 
-## 平均根径
+Count all root pixels in the binarized image and use the calibration coefficient to calculate the projected root area.
+
+## 平均根径 Average Root Diameter
 
 将根系投影面积与总长度相除，得到平均根径。
 
-## 根系表面积和总体积
+Divide the projected root area by the total length to obtain the average root diameter.
+
+## 根系表面积和总体积 Root Surface Area and Total Volume
 
 假设根系由多个等直径的小圆柱体组成，表面积和体积可通过根系长度和平均直径计算得来：
+
+Assuming the root system is composed of small cylinders of equal diameter, the surface area and volume can be calculated from the total length and average diameter:
 
 $$
 \text{总表面积} = \pi \times \text{平均直径} \times \text{总长度}
 $$
 
 $$
+\text{Total Surface Area} = \pi \times \text{Average Diameter} \times \text{Total Length}
+$$
+
+$$
 \text{总体积} = \pi \times \left(\frac{\text{平均直径}}{2}\right)^2 \times \text{总长度}
 $$
 
-# 利用Python实现根系图像分析的批量处理
+$$
+\text{Total Volume} = \pi \times \left(\frac{\text{Average Diameter}}{2}\right)^2 \times \text{Total Length}
+$$
+
+---
+
+# 利用Python实现根系图像分析的批量处理 Batch Processing of Root Image Analysis Using Python
 
 Python及其库/模块的安装方式见[chugit/Crawler_Journal_Abbreviation](https://github.com/chugit/Crawler_Journal_Abbreviation)的[安装Python](https://github.com/chugit/Crawler_Journal_Abbreviation?tab=readme-ov-file#%E5%AE%89%E8%A3%85python/)和[安装Selenium](https://github.com/chugit/Crawler_Journal_Abbreviation?tab=readme-ov-file#%E5%AE%89%E8%A3%85selenium/)部分，其中，将“Selenium”替换为下方代码运行所缺失的库/模块，即为Python库/模块的安装方式。
 
-## 白底黑根
+Instructions for installing Python and its libraries/modules can be found in the [Install Python](https://github.com/chugit/Crawler_Journal_Abbreviation?tab=readme-ov-file#%E5%AE%89%E8%A3%85python/) and [Install Selenium](https://github.com/chugit/Crawler_Journal_Abbreviation?tab=readme-ov-file#%E5%AE%89%E8%A3%85selenium/) sections of [chugit/Crawler_Journal_Abbreviation](https://github.com/chugit/Crawler_Journal_Abbreviation). To install missing libraries/modules required to run the code below, simply replace "Selenium" with the name of the missing library/module.
+
+## 白底黑根 White Background with Black Roots
 
 ```python
 import cv2
@@ -68,38 +112,38 @@ from concurrent.futures import ThreadPoolExecutor, as_completed
 import time
 from natsort import natsorted
 
-# 设置工作目录
-work_dir = 'D:\\R\\RootAnalysis' # 在该目录下自行创建Input文件夹
-input_dir = os.path.join(work_dir, 'Input') # 待处理的原始图像均放于Input文件夹内
-output_dir = os.path.join(work_dir, 'Output') # 定义二值化图像、根骨架图像、结果数据的导出位置
-output_csv = os.path.join(output_dir, 'root_analysis_results.csv') # 定义结果数据的导出文件名
+# 设置工作目录 Set working directory
+work_dir = 'D:\\R\\RootAnalysis' # 在该目录下自行创建Input文件夹 Create an Input folder manually in this directory
+input_dir = os.path.join(work_dir, 'Input') # 待处理的原始图像均放于Input文件夹内 All original images to be processed are placed in the Input folder
+output_dir = os.path.join(work_dir, 'Output') # 定义二值化图像、根骨架图像、结果数据的导出位置 Define export location for binary images, root skeleton images, and results
+output_csv = os.path.join(output_dir, 'root_analysis_results.csv') # 定义结果数据的导出文件名 Define the filename for the result data export
 os.makedirs(output_dir, exist_ok=True)
 
-# 定义像素到厘米的转换比例
-pixels_per_cm = 130  # 130像素对应1cm
+# 定义像素到厘米的转换比例 Define pixel to centimeter conversion ratio
+pixels_per_cm = 130  # 130像素对应1cm 130 pixels correspond to 1 cm
 
-# 定义图像裁剪和阈值方法的相关参数
-crop_top_percentage = 0.001  # 裁除图像顶部的0.1%。0为不剪裁
-crop_bottom_percentage = 0  # 裁除图像底部的x%。0为不剪裁
-crop_left_percentage = 0  # 裁除图像左部的x%。0为不剪裁
-crop_right_percentage = 0  # 裁除图像右部的x%。0为不剪裁
-threshold_method = "fixed"  # 阈值方法选择："fixed" 或 "otsu"（固定阈值法或Otsu自动法）
-fixed_threshold_value = 70  # 指定固定阈值（仅在使用固定阈值法时有效）。白底黑根，阈值越大，根系越厚
+# 定义图像裁剪和阈值方法的相关参数 Define parameters for image cropping and thresholding methods
+crop_top_percentage = 0.001  # 裁除图像顶部的0.1%。0为不剪裁 Crop 0.1% from the top of the image. 0 means no cropping
+crop_bottom_percentage = 0  # 裁除图像底部的x%。0为不剪裁 Crop x% from the bottom of the image. 0 means no cropping
+crop_left_percentage = 0  # 裁除图像左部的x%。0为不剪裁 Crop x% from the left side of the image. 0 means no cropping
+crop_right_percentage = 0  # 裁除图像右部的x%。0为不剪裁 Crop x% from the right side of the image. 0 means no cropping
+threshold_method = "fixed"  # 阈值方法选择："fixed" 或 "otsu"（固定阈值法或Otsu自动法） Threshold method selection: "fixed" or "otsu"
+fixed_threshold_value = 70  # 指定固定阈值（仅在使用固定阈值法时有效）。白底黑根，阈值越大，根系越厚 Specify fixed threshold (only valid when using fixed threshold method). For white background with black roots, higher threshold results in thicker roots
 
-########## 下方代码全选运行，无需调整 #############################
+########## 下方代码全选运行，无需调整 Select all code below and run; no adjustments needed #############################
 
-# 定义图像处理函数
+# 定义图像处理函数 Define image processing function
 def process_image(image_file):
-    # 构建图像路径并加载图像
+    # 构建图像路径并加载图像 Build image path and load image
     image_path = os.path.join(input_dir, image_file)
     image = cv2.imread(image_path, cv2.IMREAD_GRAYSCALE)
     
-    # 检查图像是否加载成功
+    # 检查图像是否加载成功 Check if image loaded successfully
     if image is None:
-        print(f"无法加载图像 {image_file}，跳过")
+        print(f"无法加载图像 {image_file}，跳过") # print(f"Cannot load image {image_file}, skipping")        
         return None
     
-    # 裁剪图像，以移除干扰物所在区域，避免干扰分析
+    # 裁剪图像，以移除干扰物所在区域，避免干扰分析 Crop the image to remove areas with interference
     height, width = image.shape
     crop_top = int(height * crop_top_percentage)
     crop_bottom = int(height * crop_bottom_percentage)
@@ -107,43 +151,43 @@ def process_image(image_file):
     crop_right = int(width * crop_right_percentage)
     image_cropped = image[crop_top:height - crop_bottom, crop_left:width - crop_right]
     
-    # 根据选择的阈值方法生成二值化图像
+    # 根据选择的阈值方法生成二值化图像 Generate binary image based on selected threshold method
     if threshold_method == "fixed":
         _, binary = cv2.threshold(image_cropped, fixed_threshold_value, 255, cv2.THRESH_BINARY_INV)
         threshold_value = fixed_threshold_value
     elif threshold_method == "otsu":
         threshold_value, binary = cv2.threshold(image_cropped, 0, 255, cv2.THRESH_BINARY_INV + cv2.THRESH_OTSU)
     else:
-        print(f"未定义的阈值方法: {threshold_method}")
+        print(f"未定义的阈值方法: {threshold_method}") # print(f"Undefined threshold method: {threshold_method}")
         return None
     
-    # （可选）通过腐蚀进一步减小根的边界厚度
+    # （可选）通过腐蚀进一步减小根的边界厚度 (Optional) Further reduce root boundary thickness through erosion
     # kernel = np.ones((2, 2), np.uint8)
     # binary = cv2.erode(binary, kernel, iterations=1)
     
-    # 提取根骨架
+    # 提取根骨架 Extract root skeleton
     skeleton = morphology.skeletonize(binary // 255).astype(np.uint8) * 255
 
-    # 导出处理后的图像
+    # 导出处理后的图像 Export processed images
     base_name = os.path.splitext(image_file)[0]
-    cv2.imwrite(os.path.join(output_dir, f'{base_name}_binary.jpg'), binary) # 二值化图像
-    cv2.imwrite(os.path.join(output_dir, f'{base_name}_skeleton.jpg'), skeleton) # 根骨架图像
+    cv2.imwrite(os.path.join(output_dir, f'{base_name}_binary.jpg'), binary) # 二值化图像 binary image
+    cv2.imwrite(os.path.join(output_dir, f'{base_name}_skeleton.jpg'), skeleton) # 根骨架图像 root skeleton image
 
-    # 计算总根长
+    # 计算总根长 Calculate total root length
     pixel_length = np.sum(skeleton) / 255
     total_root_length_cm = pixel_length / pixels_per_cm
 
-    # 计算根系投影面积
+    # 计算根系投影面积 Calculate projected root area
     projected_area = np.sum(binary // 255) / (pixels_per_cm**2)
 
-    # 计算根系平均直径
+    # 计算根系平均直径 Calculate average root diameter
     average_root_diameter_mm = (projected_area / total_root_length_cm) * 10
 
-    # 计算根系总表面积和总体积
+    # 计算根系总表面积和总体积 Calculate total root surface area and total volume
     root_surface_area = np.pi * (average_root_diameter_mm / 10) * total_root_length_cm
     root_volume = np.pi * ((average_root_diameter_mm / 2) / 10)**2 * total_root_length_cm
 
-    # 返回结果
+    # 返回结果 Return results
     return {
         "Image": image_file,
         "Threshold Value": threshold_value,
@@ -154,33 +198,33 @@ def process_image(image_file):
         "Root Volume (cm3)": root_volume
     }
 
-# 初始化结果列表
+# 初始化结果列表 Initialize results list
 results = []
 
-# 多线程并行运算
+# 多线程并行运算 Multi-threaded parallel processing
 start_time = time.time()
-with ThreadPoolExecutor(max_workers=6) as executor: # 此处调用的CPU线程数限定为6
+with ThreadPoolExecutor(max_workers=6) as executor: # 此处调用的CPU线程数限定为6 CPU threads limited to 6
     futures = {executor.submit(process_image, image_file): image_file for image_file in os.listdir(input_dir)}
     for future in as_completed(futures):
         result = future.result()
         if result is not None:
             results.append(result)
 end_time = time.time()
-print(f"多线程并行运算时间: {end_time - start_time:.2f} s")
+print(f"多线程并行运算时间: {end_time - start_time:.2f} s") # print(f"Multi-threaded parallel processing time: {end_time - start_time:.2f} s")
 
-# 结果按文件名的自然顺序排序
+# 结果按文件名的自然顺序排序 Sort results in natural order of filenames
 results = natsorted(results, key=lambda x: x["Image"])
 
-# 导出结果
+# 导出结果 Export results
 df = pd.DataFrame(results)
 df.to_csv(output_csv, index=False)
 
-# 打开 Output 文件夹
+# 打开 Output 文件夹 Open Output folder
 os.startfile(output_dir)
 
 ```
 
-## 黑底白根
+## 黑底白根 Black Background with White Roots
 
 ```python
 import cv2
@@ -192,32 +236,32 @@ from concurrent.futures import ThreadPoolExecutor, as_completed
 import time
 from natsort import natsorted
 
-# 设置工作目录
-work_dir = 'D:\\R\\RootAnalysis' # 在该目录下自行创建Input文件夹
-input_dir = os.path.join(work_dir, 'Input') # 待处理的原始图像均放于Input文件夹内
-output_dir = os.path.join(work_dir, 'Output') # 定义二值化图像、根骨架图像、结果数据的导出位置
-output_csv = os.path.join(output_dir, 'root_analysis_results.csv') # 定义结果数据的导出文件名
+# 设置工作目录 Set working directory
+work_dir = 'D:\\R\\RootAnalysis' # 在该目录下自行创建Input文件夹 Create an Input folder manually in this directory
+input_dir = os.path.join(work_dir, 'Input') # 待处理的原始图像均放于Input文件夹内 All original images to be processed are placed in the Input folder
+output_dir = os.path.join(work_dir, 'Output') # 定义二值化图像、根骨架图像、结果数据的导出位置 Define export location for binary images, root skeleton images, and results
+output_csv = os.path.join(output_dir, 'root_analysis_results.csv') # 定义结果数据的导出文件名 Define the filename for the result data export
 os.makedirs(output_dir, exist_ok=True)
 
-# 定义像素到厘米的转换比例
-pixels_per_cm = 130  # 130像素对应1cm
+# 定义像素到厘米的转换比例 Define pixel to centimeter conversion ratio
+pixels_per_cm = 130  # 130像素对应1cm 130 pixels correspond to 1 cm
 
-# 定义图像裁剪和阈值方法的相关参数
-crop_top_percentage = 0.001  # 裁除图像顶部的0.1%。0为不剪裁
-crop_bottom_percentage = 0  # 裁除图像底部的x%。0为不剪裁
-crop_left_percentage = 0  # 裁除图像左部的x%。0为不剪裁
-crop_right_percentage = 0  # 裁除图像右部的x%。0为不剪裁
-threshold_method = "fixed"  # 阈值方法选择："fixed" 或 "otsu"（固定阈值法或Otsu自动法）
-fixed_threshold_value = 15 # 指定固定阈值（仅在使用固定阈值法时有效）。黑底白根，阈值越小，根系越厚
+# 定义图像裁剪和阈值方法的相关参数 Define parameters for image cropping and thresholding methods
+crop_top_percentage = 0.001  # 裁除图像顶部的0.1%。0为不剪裁 Crop 0.1% from the top of the image. 0 means no cropping
+crop_bottom_percentage = 0  # 裁除图像底部的x%。0为不剪裁 Crop x% from the bottom of the image. 0 means no cropping
+crop_left_percentage = 0  # 裁除图像左部的x%。0为不剪裁 Crop x% from the left side of the image. 0 means no cropping
+crop_right_percentage = 0  # 裁除图像右部的x%。0为不剪裁 Crop x% from the right side of the image. 0 means no cropping
+threshold_method = "fixed"  # 阈值方法选择："fixed" 或 "otsu"（固定阈值法或Otsu自动法） Threshold method selection: "fixed" or "otsu"
+fixed_threshold_value = 15 # 指定固定阈值（仅在使用固定阈值法时有效）。黑底白根，阈值越小，根系越厚 Specify fixed threshold (only valid when using fixed threshold method). For black background with white roots, lower threshold results in thicker roots
 
-########## 下方代码全选运行，无需调整 #############################
+########## 下方代码全选运行，无需调整 Select all code below and run; no adjustments needed #############################
 
 def process_image(image_file):
     image_path = os.path.join(input_dir, image_file)
     image = cv2.imread(image_path, cv2.IMREAD_GRAYSCALE)
     
     if image is None:
-        print(f"无法加载图像 {image_file}，跳过")
+        print(f"无法加载图像 {image_file}，跳过") # print(f"Cannot load image {image_file}, skipping")
         return None
 
     height, width = image.shape
@@ -233,7 +277,7 @@ def process_image(image_file):
     elif threshold_method == "otsu":
         threshold_value, binary = cv2.threshold(image_cropped, 0, 255, cv2.THRESH_BINARY + cv2.THRESH_OTSU)
     else:
-        print(f"未定义的阈值方法: {threshold_method}")
+        print(f"未定义的阈值方法: {threshold_method}") # print(f"Undefined threshold method: {threshold_method}")
         return None
     
     skeleton = morphology.skeletonize(binary // 255).astype(np.uint8) * 255
@@ -265,14 +309,14 @@ def process_image(image_file):
 results = []
 
 start_time = time.time()
-with ThreadPoolExecutor(max_workers=6) as executor: # 此处调用的CPU线程数限定为6
+with ThreadPoolExecutor(max_workers=6) as executor: # 此处调用的CPU线程数限定为6 CPU threads limited to 6
     futures = {executor.submit(process_image, image_file): image_file for image_file in os.listdir(input_dir)}
     for future in as_completed(futures):
         result = future.result()
         if result is not None:
             results.append(result)
 end_time = time.time()
-print(f"多线程并行运算时间: {end_time - start_time:.2f} s")
+print(f"多线程并行运算时间: {end_time - start_time:.2f} s") # print(f"Multi-threaded parallel processing time: {end_time - start_time:.2f} s")
 
 results = natsorted(results, key=lambda x: x["Image"])
 
@@ -283,9 +327,13 @@ os.startfile(output_dir)
 
 ```
 
-# 基于Python的可交互界面
+---
+
+# 基于Python的可交互界面 Python-Based Interactive Interface
 
 整合上述两部分代码，生成可交互界面。
+
+Integrate the two parts of code above to create an interactive interface.
 
 ```python
 import tkinter as tk
@@ -301,17 +349,17 @@ from natsort import natsorted
 import threading
 import json
 
-PARAMS_FILE = "params.json"  # 程序参数文件名称。用于储存程序的终止参数，或在程序启动时自动读入以加载为初始参数，生成于工作目录或程序所在文件夹内。
+PARAMS_FILE = "params.json"  # 程序参数文件名称。用于储存程序的终止参数，或在程序启动时自动读入以加载为初始参数，生成于工作目录或程序所在文件夹内。 Program parameter file name. Used to store termination parameters of the program, or automatically read at startup to load initial parameters. Generated in the working directory or the folder where the program resides.
 
 def load_params():
-    # 检查参数文件是否存在
+    # 检查参数文件是否存在 Check if parameter file exists
     if os.path.exists(PARAMS_FILE):
         with open(PARAMS_FILE, 'r') as f:
             return json.load(f)
     return None
 
 def save_params():
-    # 保存参数文件
+    # 保存参数文件 Save parameter file
     params = {
         "input_dir": input_dir_entry.get(),
         "output_dir": output_dir_entry.get(),
@@ -328,11 +376,11 @@ def save_params():
     with open(PARAMS_FILE, 'w') as f:
         json.dump(params, f)
 
-# 加载初始参数（如果该文件存在的话）
+# 加载初始参数（如果该文件存在的话） Load initial parameters (if the file exists)
 saved_params = load_params()
 
 def create_tooltip(widget, text):
-    # 定义程序界面提示条格式
+    # 定义程序界面提示条格式 Define tooltip format for the program interface
     tooltip = tk.Toplevel(widget, bg="lightyellow", padx=5, pady=5)
     tooltip.withdraw()
     tooltip.overrideredirect(True)
@@ -350,7 +398,7 @@ def create_tooltip(widget, text):
     widget.bind("<Leave>", hide_tooltip)
 
 def save_with_increment(filepath, save_function, *args, **kwargs):
-    # 分析结果的导出名称。如果存在同名文件，则自动添加编号以区分
+    # 分析结果的导出名称。如果存在同名文件，则自动添加编号以区分 Export naming for analysis results. If a file with the same name exists, automatically add a number to distinguish
     base_name, ext = os.path.splitext(filepath)
     counter = 1
     new_filepath = filepath
@@ -360,7 +408,7 @@ def save_with_increment(filepath, save_function, *args, **kwargs):
     save_function(new_filepath, *args, **kwargs)
 
 def run_analysis():
-    # 图像分析流程
+    # 图像分析流程 Image analysis workflow
     status_text.config(state="normal")
     status_text.delete(1.0, tk.END)
     
@@ -384,9 +432,9 @@ def run_analysis():
         try:
             image = cv2.imread(image_path, cv2.IMREAD_GRAYSCALE)
             if image is None:
-                raise ValueError("无法加载图像")
+                raise ValueError("无法加载图像") # raise ValueError("Cannot load image")
         except Exception as e:
-            status_text.insert(tk.END, f"无法加载图像 {image_file}，跳过\n")
+            status_text.insert(tk.END, f"无法加载图像 {image_file}，跳过\n") # status_text.insert(tk.END, f"Cannot load image {image_file}, skipping\n")
             root.update_idletasks()
             return None
 
@@ -398,13 +446,13 @@ def run_analysis():
             crop_right = int(width * crop_right_percentage)
             image_cropped = image[crop_top:height - crop_bottom, crop_left:width - crop_right]
 
-            if root_background == "白底黑根":
+            if root_background == "白底黑根": # if root_background == "White background, black roots":
                 if threshold_method == "fixed":
                     _, binary = cv2.threshold(image_cropped, fixed_threshold_value, 255, cv2.THRESH_BINARY_INV)
                     threshold_value = fixed_threshold_value
                 elif threshold_method == "otsu":
                     threshold_value, binary = cv2.threshold(image_cropped, 0, 255, cv2.THRESH_BINARY_INV + cv2.THRESH_OTSU)
-            elif root_background == "黑底白根":
+            elif root_background == "黑底白根": # elif root_background == "Black background, white roots":
                 if threshold_method == "fixed":
                     _, binary = cv2.threshold(image_cropped, fixed_threshold_value, 255, cv2.THRESH_BINARY)
                     threshold_value = fixed_threshold_value
@@ -435,7 +483,7 @@ def run_analysis():
                 "Root Volume (cm3)": root_volume
             }
         except Exception as e:
-            status_text.insert(tk.END, f"处理图像 {image_file} 时出错，跳过\n")
+            status_text.insert(tk.END, f"处理图像 {image_file} 时出错，跳过\n") # status_text.insert(tk.END, f"Error processing image {image_file}, skipping\n")
             root.update_idletasks()
             return None
 
@@ -449,7 +497,7 @@ def run_analysis():
                 if result is not None:
                     results.append(result)
         end_time = time.time()
-        status_text.insert(tk.END, f"多线程并行运算时间: {end_time - start_time:.2f} s\n")
+        status_text.insert(tk.END, f"多线程并行运算时间: {end_time - start_time:.2f} s\n") # status_text.insert(tk.END, f"Multi-threaded parallel processing time: {end_time - start_time:.2f} s\n")
         root.update_idletasks()
 
         results = natsorted(results, key=lambda x: x["Image"])
@@ -459,12 +507,12 @@ def run_analysis():
 
     threading.Thread(target=background_task).start()
 
-# 创建程序窗口
+# 创建程序窗口 Create program window
 root = tk.Tk()
 root.title("Root Analysis Tool")
 root.geometry("370x370")
 
-# 程序初始参数。载入已保存的程序参数，没有则应用内置默认值
+# 程序初始参数。载入已保存的程序参数，没有则应用内置默认值 Program initial parameters. Load saved parameters if they exist; otherwise apply built-in defaults
 input_dir_entry = tk.Entry(root, width=30)
 input_dir_entry.insert(0, saved_params.get("input_dir", "D:\\R\\RootAnalysis\\Input") if saved_params else "D:\\R\\RootAnalysis\\Input")
 output_dir_entry = tk.Entry(root, width=30)
@@ -482,87 +530,87 @@ crop_right_entry.insert(0, saved_params.get("crop_right", "0") if saved_params e
 threshold_method_var = tk.StringVar(value=saved_params.get("threshold_method", "otsu") if saved_params else "otsu")
 fixed_threshold_entry = tk.Entry(root, width=10)
 fixed_threshold_entry.insert(0, saved_params.get("fixed_threshold_value", "100") if saved_params else "100")
-root_background_var = tk.StringVar(value=saved_params.get("root_background", "白底黑根") if saved_params else "白底黑根")
+root_background_var = tk.StringVar(value=saved_params.get("root_background", "白底黑根") if saved_params else "白底黑根") # root_background_var = tk.StringVar(value=saved_params.get("root_background", "White background, black roots") if saved_params else "White background, black roots")
 cpu_threads_entry = tk.Entry(root, width=10)
 cpu_threads_entry.insert(0, saved_params.get("cpu_threads", "6") if saved_params else "6")
 
-# 程序界面-原始图像位置
-input_dir_label = tk.Label(root, text="原始图像位置：")
+# 程序界面-原始图像位置 Program interface - Original image location
+input_dir_label = tk.Label(root, text="原始图像位置：") # input_dir_label = tk.Label(root, text="Original image location:")
 input_dir_label.grid(row=0, column=0, sticky="e", padx=0)
 input_dir_entry.grid(row=0, column=1, sticky="w")
-input_dir_button = tk.Button(root, text="选择", command=lambda: input_dir_entry.insert(0, filedialog.askdirectory()))
+input_dir_button = tk.Button(root, text="选择", command=lambda: input_dir_entry.insert(0, filedialog.askdirectory())) # input_dir_button = tk.Button(root, text="Browse", command=lambda: input_dir_entry.insert(0, filedialog.askdirectory()))
 input_dir_button.grid(row=0, column=2, sticky="w")
-create_tooltip(input_dir_label, "原始图像的存放位置")
+create_tooltip(input_dir_label, "原始图像的存放位置") # create_tooltip(input_dir_label, "Location where original images are stored")
 
-# 程序界面-结果导出位置
-output_dir_label = tk.Label(root, text="结果导出位置：")
+# 程序界面-结果导出位置 Program interface - Result export location
+output_dir_label = tk.Label(root, text="结果导出位置：") # output_dir_label = tk.Label(root, text="Result export location:")
 output_dir_label.grid(row=1, column=0, sticky="e")
 output_dir_entry.grid(row=1, column=1, sticky="w")
-output_dir_button = tk.Button(root, text="选择", command=lambda: output_dir_entry.insert(0, filedialog.askdirectory()))
+output_dir_button = tk.Button(root, text="选择", command=lambda: output_dir_entry.insert(0, filedialog.askdirectory())) # output_dir_button = tk.Button(root, text="Browse", command=lambda: output_dir_entry.insert(0, filedialog.askdirectory()))
 output_dir_button.grid(row=1, column=2, sticky="w")
-create_tooltip(output_dir_label, "二值化图像、根骨架图像、结果数据的导出位置")
+create_tooltip(output_dir_label, "二值化图像、根骨架图像、结果数据的导出位置") # create_tooltip(output_dir_label, "Export location for binary images, root skeleton images, and result data")
 
-# 程序界面-校准系数
-pixels_per_cm_label = tk.Label(root, text="校准系数：")
+# 程序界面-校准系数 Program interface - Calibration coefficient
+pixels_per_cm_label = tk.Label(root, text="校准系数：") # pixels_per_cm_label = tk.Label(root, text="Calibration coefficient:")
 pixels_per_cm_label.grid(row=2, column=0, sticky="e")
 pixels_per_cm_entry.grid(row=2, column=1, sticky="w")
-create_tooltip(pixels_per_cm_label, "像素到厘米的转换比例")
+create_tooltip(pixels_per_cm_label, "像素到厘米的转换比例") # create_tooltip(pixels_per_cm_label, "Pixel to centimeter conversion ratio")
 
-# 程序界面-图像裁剪百分比
-crop_top_label = tk.Label(root, text="裁除顶部百分比：")
+# 程序界面-图像裁剪百分比 Program interface - Image crop percentages
+crop_top_label = tk.Label(root, text="裁除顶部百分比：") # crop_top_label = tk.Label(root, text="Crop top percentage:")
 crop_top_label.grid(row=3, column=0, sticky="e")
 crop_top_entry.grid(row=3, column=1, sticky="w")
 
-crop_bottom_label = tk.Label(root, text="裁除底部百分比：")
+crop_bottom_label = tk.Label(root, text="裁除底部百分比：") # crop_bottom_label = tk.Label(root, text="Crop bottom percentage:")
 crop_bottom_label.grid(row=4, column=0, sticky="e")
 crop_bottom_entry.grid(row=4, column=1, sticky="w")
 
-crop_left_label = tk.Label(root, text="裁除左部百分比：")
+crop_left_label = tk.Label(root, text="裁除左部百分比：") # crop_left_label = tk.Label(root, text="Crop left percentage:")
 crop_left_label.grid(row=5, column=0, sticky="e")
 crop_left_entry.grid(row=5, column=1, sticky="w")
 
-crop_right_label = tk.Label(root, text="裁除右部百分比：")
+crop_right_label = tk.Label(root, text="裁除右部百分比：") # crop_right_label = tk.Label(root, text="Crop right percentage:")
 crop_right_label.grid(row=6, column=0, sticky="e")
 crop_right_entry.grid(row=6, column=1, sticky="w")
 
-# 程序界面-图像类型
-root_background_label = tk.Label(root, text="图像类型：")
+# 程序界面-图像类型 Program interface - Image type
+root_background_label = tk.Label(root, text="图像类型：") # root_background_label = tk.Label(root, text="Image type:")
 root_background_label.grid(row=7, column=0, sticky="e")
-white_radio = ttk.Radiobutton(root, text="白底黑根", variable=root_background_var, value="白底黑根")
+white_radio = ttk.Radiobutton(root, text="白底黑根", variable=root_background_var, value="白底黑根") # white_radio = ttk.Radiobutton(root, text="White background, black roots", variable=root_background_var, value="White background, black roots")
 white_radio.grid(row=7, column=1, sticky="w")
-create_tooltip(white_radio, "阈值越大，根系越厚")
-black_radio = ttk.Radiobutton(root, text="黑底白根", variable=root_background_var, value="黑底白根")
+create_tooltip(white_radio, "阈值越大，根系越厚") # create_tooltip(white_radio, "Higher threshold results in thicker roots")
+black_radio = ttk.Radiobutton(root, text="黑底白根", variable=root_background_var, value="黑底白根") # black_radio = ttk.Radiobutton(root, text="Black background, white roots", variable=root_background_var, value="Black background, white roots")
 black_radio.grid(row=7, column=1, sticky="w", padx=80)
-create_tooltip(black_radio, "阈值越小，根系越厚")
+create_tooltip(black_radio, "阈值越小，根系越厚") # create_tooltip(black_radio, "Lower threshold results in thicker roots")
 
-# 程序界面-阈值方法
-threshold_method_label = tk.Label(root, text="阈值方法：")
+# 程序界面-阈值方法 Program interface - Threshold method
+threshold_method_label = tk.Label(root, text="阈值方法：") # threshold_method_label = tk.Label(root, text="Threshold method:")
 threshold_method_label.grid(row=8, column=0, sticky="e")
 fixed_radio = ttk.Radiobutton(root, text="fixed", variable=threshold_method_var, value="fixed")
 fixed_radio.grid(row=8, column=1, sticky="w")
 otsu_radio = ttk.Radiobutton(root, text="otsu", variable=threshold_method_var, value="otsu")
 otsu_radio.grid(row=8, column=1, sticky="w", padx=80)
-create_tooltip(threshold_method_label, "二值化阈值确定方式")
-create_tooltip(fixed_radio, "固定阈值法")
-create_tooltip(otsu_radio, "自动阈值法")
+create_tooltip(threshold_method_label, "二值化阈值确定方式") # create_tooltip(threshold_method_label, "Method for determining binarization threshold")
+create_tooltip(fixed_radio, "固定阈值法") # create_tooltip(fixed_radio, "Fixed threshold method")
+create_tooltip(otsu_radio, "自动阈值法") # create_tooltip(otsu_radio, "Automatic threshold method")
 
-# 程序界面-固定阈值
-fixed_threshold_label = tk.Label(root, text="固定阈值：")
+# 程序界面-固定阈值 Program interface - Fixed threshold
+fixed_threshold_label = tk.Label(root, text="固定阈值：") # fixed_threshold_label = tk.Label(root, text="Fixed threshold:")
 fixed_threshold_label.grid(row=9, column=0, sticky="e")
 fixed_threshold_entry.grid(row=9, column=1, sticky="w")
-create_tooltip(fixed_threshold_label, "固定阈值仅在使用固定阈值法时有效")
+create_tooltip(fixed_threshold_label, "固定阈值仅在使用固定阈值法时有效") # create_tooltip(fixed_threshold_label, "Fixed threshold is only effective when using the fixed threshold method")
 
-# 程序界面-CPU线程数
-cpu_threads_label = tk.Label(root, text="CPU线程数：")
+# 程序界面-CPU线程数 Program interface - CPU threads
+cpu_threads_label = tk.Label(root, text="CPU线程数：") # cpu_threads_label = tk.Label(root, text="CPU threads:")
 cpu_threads_label.grid(row=10, column=0, sticky="e")
 cpu_threads_entry.grid(row=10, column=1, sticky="w")
-create_tooltip(cpu_threads_label, "并行运算调用的CPU线程数上限")
+create_tooltip(cpu_threads_label, "并行运算调用的CPU线程数上限") # create_tooltip(cpu_threads_label, "Maximum number of CPU threads used for parallel processing")
 
-# 程序界面-运行分析按钮
-run_button = tk.Button(root, text="运行分析", command=lambda: threading.Thread(target=run_analysis).start())
+# 程序界面-运行分析按钮 Program interface - Run analysis button
+run_button = tk.Button(root, text="运行分析", command=lambda: threading.Thread(target=run_analysis).start()) # run_button = tk.Button(root, text="Run Analysis", command=lambda: threading.Thread(target=run_analysis).start())
 run_button.grid(row=11, column=0, columnspan=3)
 
-# 程序界面-状态栏（带滚动条）
+# 程序界面-状态栏（带滚动条） Program interface - Status bar (with scrollbar)
 status_frame = tk.Frame(root)
 status_frame.grid(row=12, column=0, columnspan=3, sticky="we")
 status_text = tk.Text(status_frame, height=5, wrap="word", state="normal", width=40)
@@ -572,32 +620,44 @@ status_scrollbar.pack(side="right", fill="y")
 status_text.config(yscrollcommand=status_scrollbar.set)
 
 
-# 将保存参数文件函数绑定到窗口关闭事件
+# 将保存参数文件函数绑定到窗口关闭事件 Bind save parameter function to window close event
 root.protocol("WM_DELETE_WINDOW", lambda: [save_params(), root.destroy()])
 
 root.mainloop()
 
 ```
 
-# 将Python代码打包为可执行文件
+---
+
+# 将Python代码打包为可执行文件 Packaging Python Code into an Executable
 
 为减小可执行文件（exe文件）的体积，本文采用虚拟环境安装Python代码运行所需的最少库/模块（以避免不必要的模块掺入），并使用UPX压缩。
 
-## 下载UPX
+To reduce the size of the executable (exe file), this document uses a virtual environment to install only the minimal libraries/modules required to run the Python code (to avoid including unnecessary modules) and uses UPX compression.
+
+## 下载UPX Download UPX
 
 下载[UPX压缩包](https://github.com/upx/upx/releases/latest)并解压于任一文件夹，要求路径不含中文。
 
-## 安装Anaconda
+Download the [UPX package](https://github.com/upx/upx/releases/latest) and extract it to any folder; ensure the path contains no Chinese characters.
 
-本文利用Anaconda Prompt创建虚拟环境。
+## 安装Anaconda Install Anaconda
+
+本项目利用Anaconda Prompt创建虚拟环境。
 
 自行下载并安装[Anaconda](https://www.anaconda.com/download)软件。安装包也可从镜像网站（如[清华镜像站](https://mirrors.tuna.tsinghua.edu.cn/anaconda/archive/?C=M&O=D)）下载。
 
-## 创建并激活虚拟环境
+This project uses Anaconda Prompt to create a virtual environment.
+
+Download and install [Anaconda](https://www.anaconda.com/download) manually.
+
+## 创建并激活虚拟环境 Create and Activate the Virtual Environment
 
 从开始菜单运行“Anaconda Prompt”，输入指令。
 
-### 创建虚拟环境
+Run “Anaconda Prompt” from the Start menu and enter the following commands.
+
+### 创建虚拟环境 Create a virtual environment
 
 ```         
 conda create -n aotu python=3.12
@@ -605,13 +665,15 @@ conda create -n aotu python=3.12
 
 在创建过程中回复`y`，成功创建一个名字为aotu，且基于python版本3.12的虚拟环境。
 
-### 激活虚拟环境
+During creation, reply with y. This successfully creates a virtual environment named aotu based on Python version 3.12.
+
+### 激活虚拟环境 Activate the virtual environment
 
 ```         
 conda activate aotu
 ```
 
-### 查看虚拟环境
+### 查看虚拟环境 View the virtual environment
 
 ```         
 conda info --envs
@@ -621,9 +683,11 @@ conda info --envs
 conda list
 ```
 
-### 安装代码运行需要的库
+### 安装代码运行需要的库 Install libraries required for the code
 
 将代码中的库/模块与虚拟环境中已有的进行比对，安装缺失的库。
+
+Compare the libraries/modules in the code with those already present in the virtual environment, and install any missing ones.
 
 ```         
 pip install opencv-python numpy scikit-image pandas natsort
@@ -631,31 +695,37 @@ pip install opencv-python numpy scikit-image pandas natsort
 
 同时安装脚本打包模块。
 
+Also install the script packaging module.
+
 ```         
 pip install pyinstaller
 ```
 
-## 创建可执行文件
+## 创建可执行文件 Create the Executable
 
-### 切换路径
+### 切换路径 Change directory
 
 切换到待打包的py代码文件所处的文件夹。
+
+Switch to the folder containing the Python code file to be packaged.
 
 ```         
 D:
 cd R\RootAnalysis
 ```
 
-### 打包
+### 打包 Package
 
 在py代码文件所处的文件夹，新建版本信息文件version_info.txt，并在其中填入以下内容：
 
+Create a version information file `version_info.txt` in the folder containing the Python code, and fill it with the following content:
+
 ```         
-# 这里指定文件版本和产品版本为 1.0.0.0
+# 这里指定文件版本和产品版本为 1.0.0.0 Specify file version and product version as 1.0.0.0
 VSVersionInfo(
    ffi=FixedFileInfo(
-      filevers=(1, 0, 0, 0),  # 文件版本
-      prodvers=(1, 0, 0, 0),  # 产品版本
+      filevers=(1, 0, 0, 0),  # 文件版本 File version
+      prodvers=(1, 0, 0, 0),  # 产品版本 Product version
       mask=0x3f,
       flags=0x0,
       OS=0x4,
@@ -680,6 +750,8 @@ VSVersionInfo(
 
 生成可执行文件。继续在Anaconda Prompt激活的虚拟环境中，输入以下指令：
 
+Generate the executable. Continue in the Anaconda Prompt with the virtual environment activated, and enter the following command:
+
 ```         
 pyinstaller --onefile --noconsole --name root_analysis_tool --version-file D:\R\RootAnalysis\version_info.txt --upx-dir "D:\Program Files\Python312\upx-4.2.4-win64" D:\R\RootAnalysis\root_analysis_tool_package.py
 ```
@@ -688,15 +760,21 @@ pyinstaller --onefile --noconsole --name root_analysis_tool --version-file D:\R\
 
 生成的可执行文件位于dist文件夹内。
 
-## 退出并清空虚拟环境
+Where:
 
-### 退出虚拟环境
+`root_analysis_tool` is the name of the generated program, `D:\R\RootAnalysis\version_info.txt` is the location and name of the version file, `D:\Program Files\Python312\upx-4.2.4-win64` is the location of the UPX file, `D:\R\RootAnalysis\root_analysis_tool_package.py` is the location and name of the Python code.
+
+The generated executable is located in the `dist` folder.
+
+## 退出并清空虚拟环境 Exit and Clean Up the Virtual Environment
+
+### 退出虚拟环境 Exit the virtual environment
 
 ```         
 conda deactivate
 ```
 
-### 删除虚拟环境
+### 删除虚拟环境 Delete the virtual environment
 
 ```         
 conda remove --name aotu --all
