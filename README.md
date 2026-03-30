@@ -639,7 +639,7 @@ To reduce the size of the executable (exe file), this project uses a virtual env
 
 下载[UPX压缩包](https://github.com/upx/upx/releases/latest)并解压于任一文件夹，要求路径不含中文。
 
-Download the [UPX package](https://github.com/upx/upx/releases/latest) and extract it to any folder; ensure the path contains no Chinese characters.
+Download the [UPX package](https://github.com/upx/upx/releases/latest) and extract it to any folder.
 
 ## 安装Anaconda Install Anaconda
 
