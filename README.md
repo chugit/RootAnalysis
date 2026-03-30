@@ -791,7 +791,7 @@ Chu, J. C. *RootAnalysis: Batch extraction of root morphological parameters* (Ve
 ## BibTeX
 
 ```bibtex
-@software{chu_rootanalysis_100,
+@software{Chu_RootAnalysis_Batch_extraction,
   author  = {Chu, J. C.},
   title   = {RootAnalysis: Batch extraction of root morphological parameters},
   version = {1.0.0},
