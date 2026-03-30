@@ -631,9 +631,9 @@ root.mainloop()
 
 # 将Python代码打包为可执行文件 Packaging Python Code into an Executable
 
-为减小可执行文件（exe文件）的体积，本文采用虚拟环境安装Python代码运行所需的最少库/模块（以避免不必要的模块掺入），并使用UPX压缩。
+为减小可执行文件（exe文件）的体积，本项目采用虚拟环境安装Python代码运行所需的最少库/模块（以避免不必要的模块掺入），并使用UPX压缩。
 
-To reduce the size of the executable (exe file), this document uses a virtual environment to install only the minimal libraries/modules required to run the Python code (to avoid including unnecessary modules) and uses UPX compression.
+To reduce the size of the executable (exe file), this project uses a virtual environment to install only the minimal libraries/modules required to run the Python code (to avoid including unnecessary modules) and uses UPX compression.
 
 ## 下载UPX Download UPX
 
