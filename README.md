@@ -786,7 +786,7 @@ conda remove --name aotu --all
 
 If you use this software in your research, please cite it as:
 
-Chu, J. C. *RootAnalysis: Batch extraction of root morphological parameters* (Version 1.0.0) [Computer software]. https://github.com/chugit/RootAnalysis
+Chu, J. C. (2024). *RootAnalysis: Batch extraction of root morphological parameters* (Version 1.0.0) [Computer software]. https://github.com/chugit/RootAnalysis
 
 ## BibTeX
 
@@ -796,5 +796,6 @@ Chu, J. C. *RootAnalysis: Batch extraction of root morphological parameters* (Ve
   title   = {RootAnalysis: Batch extraction of root morphological parameters},
   version = {1.0.0},
   url     = {https://github.com/chugit/RootAnalysis},
+  year    = 2024
 }
 ```
