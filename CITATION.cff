@@ -1,0 +1,12 @@
+cff-version: 1.0.0
+message: "If you use this software, please cite it as below."
+title: "RootAnalysis"
+type: software
+authors:
+  - family-names: "Chu"
+    given-names: "J. C."
+version: "1.0.0"
+repository-code: "https://github.com/chugit/RootAnalysis"
+url: "https://github.com/chugit/RootAnalysis"
+abstract: "Batch extraction of root morphological parameters from plant root images with Python code, plus an interactive GUI tool."
+license: "MIT"
