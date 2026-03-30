@@ -1,6 +1,6 @@
 cff-version: 1.0.0
 message: "If you use this software, please cite it as below."
-title: "RootAnalysis"
+title: "RootAnalysis: Batch extraction of root morphological parameters"
 type: software
 authors:
   - family-names: "Chu"
