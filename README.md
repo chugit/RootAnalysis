@@ -665,7 +665,7 @@ conda create -n aotu python=3.12
 
 在创建过程中回复`y`，成功创建一个名字为aotu，且基于python版本3.12的虚拟环境。
 
-During creation, reply with y. This successfully creates a virtual environment named aotu based on Python version 3.12.
+During creation, reply with `y`. This successfully creates a virtual environment named `aotu` based on Python version 3.12.
 
 ### 激活虚拟环境 Activate the virtual environment
 
